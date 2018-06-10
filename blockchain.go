@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const difficulty = 4
+
 type blockchain struct {
 	chain              []Block
 	currentTransaction []Transaction
@@ -26,27 +28,45 @@ func (b *blockchain) newBlock(previousHash string, proof int) Block {
 		previousHash: previousHash,
 	}
 	if len(previousHash) == 0 {
-		block.previousHash = hash(b.lastBlock())
+		block.previousHash = b.lastBlock().Hash()
 	}
 	b.currentTransaction = []Transaction{}
 	b.chain = append(b.chain, block)
 	return block
 }
 
-func (b *blockchain) newTransaction(sender string, recipient string, amount int) {
+func (b *blockchain) newTransaction(sender string, recipient string, amount int) int {
 	transaction := Transaction{sender, recipient, amount}
 	b.currentTransaction = append(b.currentTransaction, transaction)
 	b.lastBlock().index++
+	return b.lastBlock().index
 }
 
-func hash(block *Block) string {
-	jsonBytes, err := json.Marshal(block)
+func (b *blockchain) proofOfWork(lastProof int) int {
+	var p = 0
+	for ; validateProof(lastProof, p); p++ {
+	}
+	return p
+}
+
+func genHashValue(a, b int) string {
+	str := fmt.Sprintf("%d%d", a, b)
+	jsonBytes, err := json.Marshal(str)
 	if err != nil {
-		fmt.Println("json marshal error")
+		fmt.Println(err)
 		os.Exit(1)
 	}
-	digest := sha256.Sum256(jsonBytes)
-	return string(digest[:])
+	return fmt.Sprintf("%x", sha256.Sum256(jsonBytes))
+}
+
+func validateProof(lastProof, proof int) bool {
+	digest := genHashValue(lastProof, proof)
+	for _, ch := range digest[len(digest)-difficulty : len(digest)] {
+		if ch != '0' {
+			return false
+		}
+	}
+	return true
 }
 
 func newBlockchain() *blockchain {
@@ -56,4 +76,9 @@ func newBlockchain() *blockchain {
 }
 
 func main() {
+	x := 5
+	p := 0
+	for ; !validateProof(x, p); p++ {
+	}
+	fmt.Printf("%d\t%s\n", p, genHashValue(x, p))
 }
