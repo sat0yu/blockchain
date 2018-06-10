@@ -8,15 +8,15 @@ import (
 )
 
 type Block struct {
-	index        int
-	previousHash string
-	proof        int
-	timestamp    int64
-	transactions []Transaction
+	Index        int
+	PreviousHash string
+	Proof        int
+	Timestamp    int64
+	Transactions []Transaction
 }
 
 func (b *Block) Hash() string {
-	jsonBytes, err := json.Marshal(b)
+	jsonBytes, err := json.Marshal(*b)
 	if err != nil {
 		fmt.Println("json marshal error")
 		os.Exit(1)

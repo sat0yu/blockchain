@@ -21,14 +21,14 @@ func (b *blockchain) lastBlock() *Block {
 
 func (b *blockchain) newBlock(previousHash string, proof int) Block {
 	block := Block{
-		index:        len(b.chain) + 1,
-		timestamp:    time.Now().UnixNano(),
-		transactions: b.currentTransaction,
-		proof:        proof,
-		previousHash: previousHash,
+		Index:        len(b.chain) + 1,
+		Timestamp:    time.Now().UnixNano(),
+		Transactions: b.currentTransaction,
+		Proof:        proof,
+		PreviousHash: previousHash,
 	}
 	if len(previousHash) == 0 {
-		block.previousHash = b.lastBlock().Hash()
+		block.PreviousHash = b.lastBlock().Hash()
 	}
 	b.currentTransaction = []Transaction{}
 	b.chain = append(b.chain, block)
