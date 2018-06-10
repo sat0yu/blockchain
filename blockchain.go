@@ -38,13 +38,12 @@ func (b *blockchain) newBlock(previousHash string, proof int) Block {
 func (b *blockchain) newTransaction(sender string, recipient string, amount int) int {
 	transaction := Transaction{sender, recipient, amount}
 	b.currentTransaction = append(b.currentTransaction, transaction)
-	b.lastBlock().index++
-	return b.lastBlock().index
+	return b.lastBlock().Index + 1
 }
 
 func (b *blockchain) proofOfWork(lastProof int) int {
 	var p = 0
-	for ; validateProof(lastProof, p); p++ {
+	for ; !validateProof(lastProof, p); p++ {
 	}
 	return p
 }
@@ -70,15 +69,46 @@ func validateProof(lastProof, proof int) bool {
 }
 
 func newBlockchain() *blockchain {
-	b := new(blockchain)
-	b.newBlock("1", 100)
-	return b
+	bc := new(blockchain)
+	bc.newBlock("1", 100)
+	return bc
 }
 
 func main() {
-	x := 5
-	p := 0
-	for ; !validateProof(x, p); p++ {
-	}
-	fmt.Printf("%d\t%s\n", p, genHashValue(x, p))
+	bc := newBlockchain()
+
+	var lastBlock *Block
+	var lastProof, proof int
+	var prevHash string
+
+	// add transaction data to the second block
+	bc.newTransaction("a", "b", 5)
+	// enclose the second block with proof
+	lastBlock = bc.lastBlock()
+	lastProof = lastBlock.Proof
+	proof = bc.proofOfWork(lastProof)
+	bc.newTransaction("master", "0", 1)
+	prevHash = lastBlock.Hash()
+	bc.newBlock(prevHash, proof)
+
+	// enclose the third block with proof (no transaction)
+	lastBlock = bc.lastBlock()
+	lastProof = lastBlock.Proof
+	proof = bc.proofOfWork(lastProof)
+	bc.newTransaction("master", "0", 1)
+	prevHash = lastBlock.Hash()
+	bc.newBlock(prevHash, proof)
+
+	// add transaction data to the third block
+	bc.newTransaction("a", "b", 5)
+	bc.newTransaction("a", "b", 5)
+	// enclose the fourth block with proof
+	lastBlock = bc.lastBlock()
+	lastProof = lastBlock.Proof
+	proof = bc.proofOfWork(lastProof)
+	bc.newTransaction("master", "0", 1)
+	prevHash = lastBlock.Hash()
+	bc.newBlock(prevHash, proof)
+
+	fmt.Println(bc.chain)
 }
