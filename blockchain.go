@@ -8,11 +8,20 @@ import (
 	"time"
 )
 
-const difficulty = 4
+const difficulty = 5
 
 type blockchain struct {
 	chain              []Block
 	currentTransaction []Transaction
+}
+
+func (b *blockchain) String() string {
+	var chain = "chain: \n"
+	for _, block := range b.chain {
+		chain += fmt.Sprintf("{\n\tindex: %d\n\tprevHash: %s\n\tts: %d\n\ttransactions: %v\n},\n", block.Index, block.PreviousHash, block.Timestamp, block.Transactions)
+	}
+	var currentTransaction = fmt.Sprintf("currentTransaction: %v\n", b.currentTransaction)
+	return chain + currentTransaction
 }
 
 func (b *blockchain) lastBlock() *Block {
@@ -74,41 +83,41 @@ func newBlockchain() *blockchain {
 	return bc
 }
 
-func main() {
-	bc := newBlockchain()
+// func main() {
+// 	bc := newBlockchain()
 
-	var lastBlock *Block
-	var lastProof, proof int
-	var prevHash string
+// 	var lastBlock *Block
+// 	var lastProof, proof int
+// 	var prevHash string
 
-	// add transaction data to the second block
-	bc.newTransaction("a", "b", 5)
-	// enclose the second block with proof
-	lastBlock = bc.lastBlock()
-	lastProof = lastBlock.Proof
-	proof = bc.proofOfWork(lastProof)
-	bc.newTransaction("master", "0", 1)
-	prevHash = lastBlock.Hash()
-	bc.newBlock(prevHash, proof)
+// 	// add transaction data to the second block
+// 	bc.newTransaction("a", "b", 5)
+// 	// enclose the second block with proof
+// 	lastBlock = bc.lastBlock()
+// 	lastProof = lastBlock.Proof
+// 	proof = bc.proofOfWork(lastProof)
+// 	bc.newTransaction("master", "0", 1)
+// 	prevHash = lastBlock.Hash()
+// 	bc.newBlock(prevHash, proof)
 
-	// enclose the third block with proof (no transaction)
-	lastBlock = bc.lastBlock()
-	lastProof = lastBlock.Proof
-	proof = bc.proofOfWork(lastProof)
-	bc.newTransaction("master", "0", 1)
-	prevHash = lastBlock.Hash()
-	bc.newBlock(prevHash, proof)
+// 	// enclose the third block with proof (no transaction)
+// 	lastBlock = bc.lastBlock()
+// 	lastProof = lastBlock.Proof
+// 	proof = bc.proofOfWork(lastProof)
+// 	bc.newTransaction("master", "0", 1)
+// 	prevHash = lastBlock.Hash()
+// 	bc.newBlock(prevHash, proof)
 
-	// add transaction data to the third block
-	bc.newTransaction("a", "b", 5)
-	bc.newTransaction("a", "b", 5)
-	// enclose the fourth block with proof
-	lastBlock = bc.lastBlock()
-	lastProof = lastBlock.Proof
-	proof = bc.proofOfWork(lastProof)
-	bc.newTransaction("master", "0", 1)
-	prevHash = lastBlock.Hash()
-	bc.newBlock(prevHash, proof)
+// 	// add transaction data to the third block
+// 	bc.newTransaction("a", "b", 5)
+// 	bc.newTransaction("a", "b", 5)
+// 	// enclose the fourth block with proof
+// 	lastBlock = bc.lastBlock()
+// 	lastProof = lastBlock.Proof
+// 	proof = bc.proofOfWork(lastProof)
+// 	bc.newTransaction("master", "0", 1)
+// 	prevHash = lastBlock.Hash()
+// 	bc.newBlock(prevHash, proof)
 
-	fmt.Println(bc.chain)
-}
+// 	fmt.Println(bc.chain)
+// }
